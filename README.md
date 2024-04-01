@@ -1,6 +1,6 @@
 # AmaRec 64 Batch Installer
 
-*This is for getting AmarecTV working with OBS x64 (supports versions newer than x32 support)*
+*This is for getting AmarecTV Live working with OBS x64 (e.g. OBS 28+)*
 
 Inspired/helped by https://www.speedrun.com/forums/speedrunning/3jj07 and https://iotku.pw/gvusb2-guide/ but automates the process for getting the x64 working.
 
