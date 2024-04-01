@@ -16,7 +16,7 @@ echo Copied files from live411beta folder into current folder.
 
 REM	Run the live411_install.bat file
 call "live411_install.bat"
-echo Installed 4.11 beta Amarec Live.
+echo Installed 4.11 beta AmaRec Live.
 
 REM	Edit the lines in register.bat from 'regsvr32 "%~dp0\AmAudioCapture.ax"' and 'regsvr32 "%~dp0\AmVideoCapture.ax"' to 'regsvr32 "%~dp0\AmAudioCapture64.ax"' and 'regsvr32 "%~dp0\AmVideoCapture64.ax"'
 
@@ -46,6 +46,6 @@ REM	Delete live411beta folder
 rmdir /s /q "%~dp0\live411beta"
 
 echo Removed the live411beta folder.
-echo 64-bit amarec compatibility successfully installed. 
+echo 64-bit AmaRec compatibility successfully installed. 
 
 pause
