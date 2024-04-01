@@ -1,5 +1,29 @@
 @echo off
-setlocal enabledelayedexpansion
+
+:: BatchGotAdmin from https://superuser.com/a/852877
+:-------------------------------------
+REM  --> Check for permissions
+>nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
+
+REM --> If error flag set, we do not have admin.
+if '%errorlevel%' NEQ '0' (
+    echo Requesting administrative privileges...
+    goto UACPrompt
+) else ( goto gotAdmin )
+
+:UACPrompt
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+    set params = %*:"=""
+    echo UAC.ShellExecute "cmd.exe", "/c %~s0 %params%", "", "runas", 1 >> "%temp%\getadmin.vbs"
+
+    "%temp%\getadmin.vbs"
+    del "%temp%\getadmin.vbs"
+    exit /B
+
+:gotAdmin
+    pushd "%CD%"
+    CD /D "%~dp0"
+:--------------------------------------
 
 REM	Check if the live411beta folder exists
 if not exist live411beta\ (
@@ -11,36 +35,21 @@ if not exist live411beta\ (
 )
 
 REM	Copy all files from live411beta file into base folder
-xcopy /s/y "%~dp0\live411beta\" "%~dp0\"
+copy /y "%~dp0\live411beta\" "%~dp0\" > nul
 echo Copied files from live411beta folder into current folder.
+
+REM Edit the file to make commands silent
+set "textFile=live411_install.bat"
+for /f "delims=" %%i in ('type "%textFile%" ^& break ^> "%textFile%" ') do (
+    set "line=%%i"
+    setlocal enabledelayedexpansion
+    >>"%textFile%" echo(!line:regsvr32 =regsvr32 /s !
+    endlocal
+)
 
 REM	Run the live411_install.bat file
 call "live411_install.bat"
 echo Installed 4.11 beta AmaRec Live.
-
-REM	Edit the lines in register.bat from 'regsvr32 "%~dp0\AmAudioCapture.ax"' and 'regsvr32 "%~dp0\AmVideoCapture.ax"' to 'regsvr32 "%~dp0\AmAudioCapture64.ax"' and 'regsvr32 "%~dp0\AmVideoCapture64.ax"'
-
-set "textFile=register.bat"
-
-for /f "delims=" %%i in ('type "%textFile%" ^& break ^> "%textFile%" ') do (
-    set "line=%%i"
-    setlocal enabledelayedexpansion
-    >>"%textFile%" echo(!line:AmAudioCapture.ax=AmAudioCapture64.ax!
-    endlocal
-)
-
-for /f "delims=" %%i in ('type "%textFile%" ^& break ^> "%textFile%" ') do (
-    set "line=%%i"
-    setlocal enabledelayedexpansion
-    >>"%textFile%" echo(!line:AmVideoCapture.ax=AmVideoCapture64.ax!
-    endlocal
-)
-
-echo Edited register.bat
-
-REM	Run the register.bat file
-call "register.bat"
-echo Installed 64-bit compatibility files.
 
 REM	Delete live411beta folder
 rmdir /s /q "%~dp0\live411beta"
